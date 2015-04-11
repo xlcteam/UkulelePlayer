@@ -33,7 +33,7 @@ void play(char chord)
 void setup()
 {
     for (uint8_t i = 0; i < (sizeof(motors)/sizeof(*motors)); i++)
-        motors[i]->attach(pins[i]);;
+        motors[i]->attach(pins[i]);
 }
 
 void loop()
