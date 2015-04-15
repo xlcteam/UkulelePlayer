@@ -1,11 +1,13 @@
 #include <Servo.h>
 
 #define SERVOS 5
+#define WRIST_DELAY 100
 
 Servo* motors[SERVOS] = {new Servo(), new Servo(), new Servo(), new Servo(), new Servo()};
 Servo* hand = new Servo();
+Servo* wrist = new Servo();
 
-uint8_t pins[] = {3, 5, 6, 9, 10};
+uint8_t pins[] = {2, 3, 4, 5, 6};
 
 char chord_ids[] = {' ', 'C', 'G', 'a', 'F'};
 uint8_t chords[][SERVOS] = { {90, 90, 90, 90, 100},
@@ -39,46 +41,51 @@ void move_hand(char dir)
         hand->write(150);
 }
 
+void wrist_on(void)
+{
+    wrist->write(20);    
+}
+
+void wrist_off(void)
+{
+    wrist->write(70);
+}
+
+void strings(uint8_t count)
+{
+    for (uint8_t i = 0; i < count; i++) {
+        wrist_on();
+        delay(WRIST_DELAY);
+        move_hand('d');
+        delay(500);
+        wrist_off();
+        delay(WRIST_DELAY);
+        move_hand('u');
+        delay(500);
+    }
+}
+
 void setup()
 {
     for (uint8_t i = 0; i < (sizeof(motors)/sizeof(*motors)); i++)
         motors[i]->attach(pins[i]);
 
-    hand->attach(11);
+    hand->attach(7);
+    wrist->attach(8);
+
+    /* reset servos to default position */
+    play(' ');
+    wrist_off();
+    delay(WRIST_DELAY);
     move_hand('u');
+    delay(500);
 }
 
+char chords_to_play[] = {'C', 'G', 'a', 'F', 'C', 'G', 'a', 'C'};
 void loop()
 {
-    play('C');
-    move_hand('u');
-    delay(800);
-
-    play('G');
-    move_hand('d');
-    delay(800);
-
-    play('a');
-    move_hand('u');
-    delay(800);
-
-    play('F');
-    move_hand('d');
-    delay(800);
-
-    play('C');
-    move_hand('u');
-    delay(800);
-
-    play('G');
-    move_hand('d');
-    delay(800);
-
-    play('a');
-    move_hand('u');
-    delay(800);
-
-    play('C');
-    move_hand('d');
-    delay(800);
+    for (uint8_t i = 0; i < (sizeof(chords_to_play)/sizeof(*chords_to_play)); i++) {
+        play(chords_to_play[i]);
+        strings(2);
+    }
 }
