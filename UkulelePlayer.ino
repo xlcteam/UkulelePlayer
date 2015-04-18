@@ -3,6 +3,8 @@
 #define SERVOS 5
 #define WRIST_DELAY 100
 
+#define LED 13
+
 Servo* motors[SERVOS] = {new Servo(), new Servo(), new Servo(), new Servo(), new Servo()};
 Servo* hand = new Servo();
 Servo* wrist = new Servo();
@@ -51,17 +53,25 @@ void wrist_off(void)
     wrist->write(70);
 }
 
+void led(void)
+{
+    digitalWrite(LED, HIGH);
+    delay(5);
+    digitalWrite(LED, LOW);
+}
+
 void strings(uint8_t count)
 {
     for (uint8_t i = 0; i < count; i++) {
         wrist_on();
         delay(WRIST_DELAY);
         move_hand('d');
-        delay(500);
+        led();
+        delay(360);
         wrist_off();
         delay(WRIST_DELAY);
         move_hand('u');
-        delay(500);
+        delay(360);
     }
 }
 
@@ -69,6 +79,8 @@ void setup()
 {
     for (uint8_t i = 0; i < (sizeof(motors)/sizeof(*motors)); i++)
         motors[i]->attach(pins[i]);
+        
+    pinMode(LED, OUTPUT);
 
     hand->attach(7);
     wrist->attach(8);
