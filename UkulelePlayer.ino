@@ -2,6 +2,7 @@
 
 #define SERVOS 5
 #define WRIST_DELAY 100
+#define HAND_DELAY 360
 
 #define LED 13
 
@@ -67,11 +68,11 @@ void strings(uint8_t count)
         delay(WRIST_DELAY);
         move_hand('d');
         led();
-        delay(360);
+        delay(HAND_DELAY);
         wrist_off();
         delay(WRIST_DELAY);
         move_hand('u');
-        delay(360);
+        delay(HAND_DELAY);
     }
 }
 
