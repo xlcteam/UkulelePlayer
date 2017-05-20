@@ -9,8 +9,15 @@
 Servo* motors[SERVOS] = {new Servo(), new Servo(), new Servo(), new Servo(), new Servo()};
 Servo* hand = new Servo();
 Servo* wrist = new Servo();
+Servo* drums[2] = {new Servo(), new Servo()};
 
 uint8_t pins[] = {2, 3, 4, 5, 6};
+uint8_t drum_pins[] = {9, 10};
+uint8_t drum_to_play = 1;
+
+uint8_t drum_chords[][2] = { {0, 180}, /* default position */
+                             {50, 180}, /* right arm down */
+                             {0, 130} }; /* left arm down */
 
 char chord_ids[] = {' ', 'C', 'G', 'a', 'F'};
 uint8_t chords[][SERVOS] = { {90, 90, 90, 90, 100},
@@ -34,6 +41,12 @@ void play(char chord)
 
     for (uint8_t i = 0; i < (sizeof(motors)/sizeof(*motors)); i++)
         motors[i]->write(chords[chord_id][i]);
+}
+
+void play_drum(uint8_t pos)
+{
+    for (uint8_t i = 0; i < (sizeof(drums)/sizeof(*drums)); i++)
+        drums[i]->write(drum_chords[pos][i]);
 }
 
 void move_hand(char dir)
@@ -67,7 +80,10 @@ void strings(uint8_t count)
         wrist_on();
         delay(WRIST_DELAY);
         move_hand('d');
-        led();
+
+        play_drum(drum_to_play);
+        drum_to_play = (drum_to_play % 2) + 1;
+
         delay(HAND_DELAY);
         wrist_off();
         delay(WRIST_DELAY);
@@ -86,7 +102,11 @@ void setup()
     hand->attach(7);
     wrist->attach(8);
 
+    drums[0]->attach(drum_pins[0]);
+    drums[1]->attach(drum_pins[1]);
+
     /* reset servos to default position */
+    play_drum(0);
     play(' ');
     wrist_off();
     delay(WRIST_DELAY);
