@@ -6,6 +6,8 @@
 
 #define LED 13
 
+#define START_BUTTON 53
+
 Servo* motors[SERVOS] = {new Servo(), new Servo(), new Servo(), new Servo(), new Servo()};
 Servo* hand = new Servo();
 Servo* wrist = new Servo();
@@ -98,6 +100,7 @@ void setup()
         motors[i]->attach(pins[i]);
         
     pinMode(LED, OUTPUT);
+    pinMode(START_BUTTON, INPUT_PULLUP);
 
     hand->attach(7);
     wrist->attach(8);
@@ -117,8 +120,12 @@ void setup()
 char chords_to_play[] = {'C', 'G', 'a', 'F', 'C', 'G', 'a', 'C'};
 void loop()
 {
-    for (uint8_t i = 0; i < (sizeof(chords_to_play)/sizeof(*chords_to_play)); i++) {
-        play(chords_to_play[i]);
-        strings(2);
+    if (digitalRead(START_BUTTON) == 0) {
+        for (uint8_t rounds = 0; rounds < 3; rounds++) {
+            for (uint8_t i = 0; i < (sizeof(chords_to_play)/sizeof(*chords_to_play)); i++) {
+                play(chords_to_play[i]);
+                strings(2);
+            }
+        }
     }
 }
